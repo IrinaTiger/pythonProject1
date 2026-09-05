@@ -6,6 +6,7 @@ import requests
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import allure
 
 
 BASE_URL=os.getenv("BASE_URL")
@@ -60,8 +61,7 @@ def cursor_db_session(db_session_connection):
 
 
 
-
-#Получать JWT токен для Notification Centre
+@allure.title('Генерация токена JWT для Notification Centre')
 @pytest.fixture
 def generate_jwt_token():
 
@@ -91,4 +91,19 @@ def db_notification_centre():
 
     cursor.close()
     connection.close()
+@pytest.fixture
+def get_headers():
+    def _get_headers(jwt_token=None, buyer_id=None, language=None):
+
+        headers = {}
+
+        if jwt_token:
+            headers["Token"] = jwt_token
+        if buyer_id:
+            headers["X-Buyer-Id"] = str(buyer_id)
+        if language:
+            headers["X-Language"] = language
+
+        return headers
+    return _get_headers
 

@@ -5,6 +5,7 @@ psycopg2-binary==2.9.12
 pydantic==-2.13.4
 allure-pytest==2.16.0
 curlify==3.0.0
+typing==3.7.4.3
 
 
 
