@@ -16,12 +16,6 @@ class GetNotification(BaseModel):
     type: str
     unreadMessages: int
 
-
-
-class  ValiditeNotification(Models_Pydantic):
-    @staticmethod
-    def validate_list_response(response):
-       return Models_Pydantic.validate_list_response(response,GetNotification)
 class GET_Notification_id(BaseModel):
     date:str
     time:str
@@ -30,12 +24,17 @@ class GET_Notification_id(BaseModel):
 
 
 @allure.step("Валидация ответа")
-def validate_get_notification_id(response):
+class  ValiditeNotification(Models_Pydantic):
+    @staticmethod
+    def validate_list_response(response):
+       return Models_Pydantic.validate_list_response(response,GetNotification)
 
-    try:
-        notification_id=[GET_Notification_id.model_validate(notification) for notification in response.json()]
-        return notification_id
-    except ValueError as e:
-        pytest.fail(f"Валидация не прошла {e}")
+    @staticmethod
+    def  validate_get_notification_id(response):
+        return Models_Pydantic.validate_list_response(response, GetNotification)
+
+
+
+
 
 
