@@ -1,14 +1,12 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
-import pytest
-import requests
 from curlify import to_curl
 import allure
-from tests.test_notification_center.models import GET_Notification,validate_get_notification,GET_Notification_id,validate_get_notification_id
+from tests.test_notification_center.models import validate_get_notification_id,ValiditeNotification
 
 
-from api.notification_centre.notification_centre import Notification_v1
+from clients.api.notification_centre.notification_centre import NotificationV1
 
 BASE_URL_NOTIFICATION_CENTER=os.getenv("BASE_URL_NOTIFICATION_CENTER")
 
@@ -27,15 +25,16 @@ def test_get_notification(generate_jwt_token,db_notification_centre,get_headers)
             jwt_token=generate_jwt_token,
             language='ru'
         )
+    client=NotificationV1()
 
-    response=Notification_v1.get_notification(headers=headers)
+    response=client.get_notification(headers=headers)
     allure.attach(to_curl(response.request),
                   name="Curl GET /notification",
                   attachment_type=allure.attachment_type.JSON
                   )
 
     assert response.status_code==200
-    validate_get_notification(response)
+    ValiditeNotification.validate_notification(response)
 
 
 def test_get_notification_id(generate_jwt_token,get_headers,db_notification_centre):
@@ -46,13 +45,13 @@ def test_get_notification_id(generate_jwt_token,get_headers,db_notification_cent
         buyer_id=buyer_id,
         jwt_token = generate_jwt_token
     )
+    clients=NotificationV1()
 
-    response=Notification_v1.get_notification_id(id=order_id,headers=headers)
+    response=clients.get_notification_id(id=order_id,headers=headers,timeout=1)
     assert response.status_code==200
     allure.attach(to_curl(response.request),
                    name="Curl GET notificatuion/{id}",
                    attachment_type=allure.attachment_type.JSON
                    )
     validate_get_notification_id(response)
-
 

@@ -1,11 +1,11 @@
 import allure
 import pytest
 
-from api.V2.authorization import Authotization
+from clients.api.V2.authorization import Authotization
 from tests.test_V2.models import Login
-from api.helpers.helpers import Models_Pydantic,Checking
-from api.helpers.helpers_db import SessionDbHelper
-from curlify import to_curl
+from clients.api.helpers.helpers import Models_Pydantic,Checking
+from clients.api.helpers.helpers_db import SessionDbHelper
+
 
 @pytest.mark.parametrize("phone,password,x_city,status_code", [
     

@@ -18,7 +18,7 @@ HOST_SESSION=os.getenv("HOST_SESSION")
 DATABASE_SESSION=os.getenv("DATABASE_SESSION")
 USERNAME_SESSION=os.getenv("USERNAME_SESSION")
 PASSWORD_SESSION=os.getenv("PASSWORD_SESSION")
-BASE_URL_NOTIF_CENTRE=os.getenv("BASE_URL_NOTIFICATION_CENTRE")
+BASE_URL_NOTIF_CENTRE=os.getenv("BASE_URL_NOTIFICATION_CENTER")
 JWT_TOKEN_BASE_BASE_URL_NOTIFICATION_CENTER=os.getenv("JWT_TOKEN_BASE_BASE_URL_NOTIFICATION_CENTER")
 HOST_SESSION_NOTIFICATION_CENTER=os.getenv("HOST_SESSION_NOTIFICATION_CENTER")
 DATABASE_SESSION_NOTIFICATION_CENTER=os.getenv("DATABASE_SESSION_NOTIFICATION_CENTER")
@@ -75,7 +75,7 @@ def generate_jwt_token():
 
     get_jwt=requests.get(JWT_TOKEN_BASE_BASE_URL_NOTIFICATION_CENTER,params=params)
     assert get_jwt.status_code==200,f"JWT токен не получен, код {get_jwt.status_code}"
-    return get_jwt.json().get("token")
+    return get_jwt.json().get ("token")
 
 @pytest.fixture
 def db_notification_centre():

@@ -1,12 +1,14 @@
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel,TypeAdapter
 import allure
+from  clients.api.helpers.helpers import Models_Pydantic
+from typing import List
 
 
 
-class GET_Notification(BaseModel):
+class GetNotification(BaseModel):
 
-    orderId:int
+    orderId:bool
     combinedOrderId: str
     title: str
     date: str
@@ -16,11 +18,11 @@ class GET_Notification(BaseModel):
 
 
 
-@allure.step("Валидация ответа")
-def validate_get_notification(response):
-
-    notifications = [GET_Notification.model_validate(notification) for notification in response.json()]
-    return notifications
+class  ValiditeNotification(Models_Pydantic):
+    @staticmethod
+    def validate_notification(response):
+        adapter=TypeAdapter(List[GetNotification])
+        return adapter
 
 class GET_Notification_id(BaseModel):
     date:str
