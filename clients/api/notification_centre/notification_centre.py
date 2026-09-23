@@ -1,11 +1,8 @@
 import os
-
 import allure
 from dotenv import load_dotenv
 import requests
 load_dotenv()
-import allure
-
 BASE_URL_NOTIFICATION_CENTER=os.getenv("BASE_URL_NOTIFICATION_CENTER")
 from clients.api_clients import  ApiClient
 

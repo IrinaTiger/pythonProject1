@@ -8,7 +8,7 @@ from typing import List
 
 class GetNotification(BaseModel):
 
-    orderId:bool
+    orderId:int
     combinedOrderId: str
     title: str
     date: str
@@ -20,10 +20,8 @@ class GetNotification(BaseModel):
 
 class  ValiditeNotification(Models_Pydantic):
     @staticmethod
-    def validate_notification(response):
-        adapter=TypeAdapter(List[GetNotification])
-        return adapter
-
+    def validate_list_response(response):
+       return Models_Pydantic.validate_list_response(response,GetNotification)
 class GET_Notification_id(BaseModel):
     date:str
     time:str

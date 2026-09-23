@@ -4,8 +4,6 @@ load_dotenv()
 from curlify import to_curl
 import allure
 from tests.test_notification_center.models import validate_get_notification_id,ValiditeNotification
-
-
 from clients.api.notification_centre.notification_centre import NotificationV1
 
 BASE_URL_NOTIFICATION_CENTER=os.getenv("BASE_URL_NOTIFICATION_CENTER")
@@ -34,7 +32,8 @@ def test_get_notification(generate_jwt_token,db_notification_centre,get_headers)
                   )
 
     assert response.status_code==200
-    ValiditeNotification.validate_notification(response)
+    ValiditeNotification.validate_list_response(response.json()
+
 
 
 def test_get_notification_id(generate_jwt_token,get_headers,db_notification_centre):
