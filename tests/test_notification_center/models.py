@@ -31,7 +31,7 @@ class  ValiditeNotification(Models_Pydantic):
 
     @staticmethod
     def  validate_get_notification_id(response):
-        return Models_Pydantic.validate_list_response(response, GetNotification)
+        return Models_Pydantic.validate_list_response(response, GET_Notification_id)
 
 
 

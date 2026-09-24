@@ -26,10 +26,10 @@ def test_get_notification(generate_jwt_token,db_notification_centre,get_headers)
     client=NotificationV1()
 
     response=client.get_notification(headers=headers)
-    allure.attach(to_curl(response.request),
-                  name="Curl GET /notification",
-                  attachment_type=allure.attachment_type.JSON
-                  )
+    # allure.attach(to_curl(response.request),
+    #               name="Curl GET /notification",
+    #               attachment_type=allure.attachment_type.JSON
+    #               )
 
     assert response.status_code==200
     ValiditeNotification.validate_list_response(response.json())
@@ -48,9 +48,9 @@ def test_get_notification_id(generate_jwt_token,get_headers,db_notification_cent
 
     response=clients.get_notification_id(id=order_id,headers=headers,timeout=1)
     assert response.status_code==200
-    allure.attach(to_curl(response.request),
-                   name="Curl GET notificatuion/{id}",
-                   attachment_type=allure.attachment_type.JSON
-                   )
+    # allure.attach(to_curl(response.request),
+    #                name="Curl GET notificatuion/{id}",
+    #                attachment_type=allure.attachment_type.JSON
+    #                )
     ValiditeNotification.validate_get_notification_id(response.json())
 

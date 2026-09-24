@@ -1,7 +1,7 @@
 import requests
 from urllib.parse import urljoin
 import allure
-
+from curlify import to_curl
 class ApiClient:
     def __init__(self,base_url):
         self.base_url=base_url
@@ -20,6 +20,14 @@ class ApiClient:
             name="Response Body",
             attachment_type=allure.attachment_type.JSON,
         )
+
+
+        allure.attach(
+            to_curl(response.request),
+            name=f'Curl к {endpoint}',
+            attachment_type=allure.attachment_type.JSON,
+        )
+
         return response
 
     def post(self,endpoint,headers=None,params=None,json=None,data=None):
