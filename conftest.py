@@ -1,5 +1,8 @@
 import os
 from dotenv import load_dotenv
+
+import clients.headers_builder
+
 load_dotenv()
 import pytest
 import requests
@@ -7,9 +10,9 @@ import requests
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import allure
+from clients.headers_builder import Headers
 
-
-BASE_URL=os.getenv("BASE_URL")
+BASE_URL=os.getenv("BASE_URL_MARKETPLACE")
 HOST=os.getenv("HOST")
 DATABASE=os.getenv("DATABASE")
 USERNAME=os.getenv("USERNAME")
@@ -93,7 +96,7 @@ def db_notification_centre():
     connection.close()
 @pytest.fixture
 def get_headers():
-    def _get_headers(jwt_token=None, buyer_id=None, language=None):
+    def _get_headers(x_key=None,jwt_token=None, buyer_id=None, language=None):
 
         headers = {}
 
@@ -103,6 +106,8 @@ def get_headers():
             headers["X-Buyer-Id"] = str(buyer_id)
         if language:
             headers["X-Language"] = language
+        if x_key:
+            headers["X-Key"]=x_key
 
         return headers
     return _get_headers
