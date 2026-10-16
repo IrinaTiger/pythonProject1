@@ -14,7 +14,7 @@ class GetNotification(BaseModel):
     date: str
     time: str
     type: str
-    unreadMessages: int
+    unreadMessages: int | None
 
 class GET_Notification_id(BaseModel):
     date:str

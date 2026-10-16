@@ -1,40 +1,47 @@
-import os
-from dotenv import load_dotenv
 
 import clients.headers_builder
+from clients.api.catalog.facade import CatalogFacade
+from clients.api.v1.authorization.Facades.FacadesV1.FacadeAuthorization import FacadeAuthorization
 
-load_dotenv()
 import pytest
 import requests
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import allure
-from clients.headers_builder import Headers
+from clients.headers_builder import Headers_marketplace
+import config
+from config import (
+    BASE_URL_MARKETPLACE,
+    HOST,
+    DATABASE,
+    USERNAME,
+    PASSWORD,
+    HOST_SESSION,
+    DATABASE_SESSION,
+    USERNAME_SESSION,
+    PASSWORD_SESSION,
+    BASE_URL_NOTIFICATION_CENTER,
+    JWT_TOKEN_BASE_BASE_URL,
+    HOST_SESSION_NOTIFICATION_CENTER,
+    DATABASE_SESSION_NOTIFICATION_CENTER,
+    USERNAME_NOTIFICATION_CENTER,
+    PASSWORD_NOTIFICATION_CENTER,
+    HOST_JWT_CATALOG,
+    SECRET_JWT_CATALOG,
+    ISSUER_JWT_CATALOG,
+    SUBJECT_JWT_CATALOG,
+    EXPIRE_JWT_CATALOG
+    )
 
-BASE_URL=os.getenv("BASE_URL_MARKETPLACE")
-HOST=os.getenv("HOST")
-DATABASE=os.getenv("DATABASE")
-USERNAME=os.getenv("USERNAME")
-PASSWORD=os.getenv("PASSWORD")
-HOST_SESSION=os.getenv("HOST_SESSION")
-DATABASE_SESSION=os.getenv("DATABASE_SESSION")
-USERNAME_SESSION=os.getenv("USERNAME_SESSION")
-PASSWORD_SESSION=os.getenv("PASSWORD_SESSION")
-BASE_URL_NOTIF_CENTRE=os.getenv("BASE_URL_NOTIFICATION_CENTER")
-JWT_TOKEN_BASE_BASE_URL_NOTIFICATION_CENTER=os.getenv("JWT_TOKEN_BASE_BASE_URL_NOTIFICATION_CENTER")
-HOST_SESSION_NOTIFICATION_CENTER=os.getenv("HOST_SESSION_NOTIFICATION_CENTER")
-DATABASE_SESSION_NOTIFICATION_CENTER=os.getenv("DATABASE_SESSION_NOTIFICATION_CENTER")
-USERNAME_NOTIFICATION_CENTER=os.getenv("USERNAME_NOTIFICATION_CENTER")
-PASSWORD_NOTIFICATION_CENTER=os.getenv("PASSWORD_NOTIFICATION_CENTER")
-
-
+from curlify import to_curl
+from clients.api.v1.authorization.authorization_client import Authorization
 
 #Получить неавторизированный x-key 
 @pytest.fixture
 def session_non_authorized_x_key():
     session=requests.Session()
-    url=f'{BASE_URL}/buyer/v2/auth/login'
+    url=f'{BASE_URL_MARKETPLACE}/buyer/v2/auth/login'
     res=requests.post(url)
     x_key=res.headers.get('x-key')
     session.headers.update({"x-key": x_key})
@@ -43,12 +50,12 @@ def session_non_authorized_x_key():
 #Подключится к бд сессий маркета
 @pytest.fixture
 def db_session_connection():
+    print(DATABASE_SESSION)
     connection=psycopg2.connect(
-    host=os.getenv("HOST_SESSION"),
-    database = os.getenv("DATABASE_SESSION"),
-    user= os.getenv("USERNAME_SESSION"),
-    password = os.getenv("PASSWORD_SESSION")
-
+    host=HOST_SESSION,
+    database =DATABASE_SESSION,
+    user= USERNAME_SESSION,
+    password = PASSWORD_SESSION
     )
     connection.autocommit=False
     try:
@@ -66,7 +73,7 @@ def cursor_db_session(db_session_connection):
 
 @allure.title('Генерация токена JWT для Notification Centre')
 @pytest.fixture
-def generate_jwt_token():
+def generate_jwt_token_notification_center():
 
     params={
         "host":"notification-center-stage.ecom.fix-price.ru",
@@ -76,10 +83,25 @@ def generate_jwt_token():
         "expire":"36000"
     }
 
-    get_jwt=requests.get(JWT_TOKEN_BASE_BASE_URL_NOTIFICATION_CENTER,params=params)
+    get_jwt=requests.get(JWT_TOKEN_BASE_BASE_URL,params=params)
     assert get_jwt.status_code==200,f"JWT токен не получен, код {get_jwt.status_code}"
     return get_jwt.json().get ("token")
 
+
+@pytest.fixture
+def generate_jwt_token_catalog():
+    params={
+        'host':HOST_JWT_CATALOG,
+        'secret':SECRET_JWT_CATALOG,
+        'issuer':ISSUER_JWT_CATALOG,
+        'subject':SUBJECT_JWT_CATALOG,
+        'expire':EXPIRE_JWT_CATALOG
+
+        }
+    response=requests.get(url=JWT_TOKEN_BASE_BASE_URL,params=params)
+    print(to_curl(response.request))
+    assert  response.status_code==200,f"JWT токен не получен, ответ: {response.json()}"
+    return response.json().get("token")
 @pytest.fixture
 def db_notification_centre():
     connection=psycopg2.connect(
@@ -112,3 +134,18 @@ def get_headers():
         return headers
     return _get_headers
 
+@pytest.fixture
+def login_catalog(client_catalog_create):
+    return CatalogFacade(client_catalog_create)
+
+
+@pytest.fixture
+def client_marketplace_Authorization():
+    client=Authorization()
+    return client
+
+@pytest.fixture
+def auth_request_marketplace(client_marketplace_Authorization,session_non_authorized_x_key,get_headers):
+    _, x_key = session_non_authorized_x_key
+    headers = get_headers(x_key=x_key)
+    return FacadeAuthorization(client_marketplace_Authorization,headers)

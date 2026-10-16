@@ -7,6 +7,7 @@ BASE_URL_NOTIFICATION_CENTER=os.getenv("BASE_URL_NOTIFICATION_CENTER")
 from clients.api_clients import  ApiClient
 
 class NotificationV1(ApiClient):
+
     def __init__(self):
         super().__init__(f"{BASE_URL_NOTIFICATION_CENTER}/v1/")
 
