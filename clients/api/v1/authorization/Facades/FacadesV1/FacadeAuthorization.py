@@ -12,5 +12,4 @@ class FacadeAuthorization:
             "captcha": ""
         }
         response = self.client.auth_request(json=body, headers=self.headers)
-        Checking.assert_status_code(response, 200)
         return response

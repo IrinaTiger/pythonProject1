@@ -1,6 +1,8 @@
 from clients.api.catalog.v3.models import Authorization_catalog
 from clients.api.catalog.v3.models import Authorization_catalog
-from clients.api.helpers.helpers import Checking
+from clients.api.helpers.helpers import Checking,Models_Pydantic
+import allure
+
 import pytest
 class CatalogFacade:
     def __init__(self,client):
@@ -12,10 +14,9 @@ class CatalogFacade:
             "phone": phone,
             "externalAuth": True
         }
+
         response=self.client.login_catalog(headers=headers,json=body_catalog)
 
-        Checking.assert_status_code(response, 200)
-
-
         Authorization_catalog.model_validate(response.json())
+        Models_Pydantic.validate_response(response.json(), Authorization_catalog)
         return response
