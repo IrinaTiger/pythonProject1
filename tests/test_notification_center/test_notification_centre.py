@@ -20,7 +20,7 @@ def test_get_notification(generate_jwt_token_notification_center,db_notification
     with allure.step("Формирование заголовков для теста"):
         headers=get_headers(
             buyer_id=buyer_id,
-            jwt_token=generate_jwt_token,
+            jwt_token=generate_jwt_token_notification_center,
             language='ru'
         )
     client=NotificationV1()
@@ -38,7 +38,7 @@ def test_get_notification_id(generate_jwt_token_notification_center,get_headers,
     order_id=str(order_id.split('-')[1]) if "-" in order_id else order_id
     headers=get_headers(
         buyer_id=buyer_id,
-        jwt_token = generate_jwt_token,
+        jwt_token = generate_jwt_token_notification_center,
         language='ru'
     )
     clients=NotificationV1()

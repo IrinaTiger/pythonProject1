@@ -14,7 +14,7 @@ from clients.api.helpers.helpers_db import SessionDbHelper
     ])
 
 @allure.title("Позитивная авторизация")
-def test_login(session_non_authorized_x_key, phone, password, x_city,status_code,cursor_db_session):
+def test_login(session_non_authorized_x_key, phone, password, x_city,status_code,marketplace_db_session):
     session,x_key = session_non_authorized_x_key
     hash=x_key.split(":")[1]
     headers = {
@@ -34,7 +34,7 @@ def test_login(session_non_authorized_x_key, phone, password, x_city,status_code
     with allure.step("Проверка содержания ответа"):
         assert user_data.isUserConfirmed==False
 
-    SessionDbHelper.checking_session_login_buyer_in_session_db(cursor_db_session, hash)
+    SessionDbHelper.checking_session_login_buyer_in_session_db(marketplace_db_session, hash)
 
 
 
