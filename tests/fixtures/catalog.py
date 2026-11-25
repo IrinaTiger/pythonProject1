@@ -1,10 +1,10 @@
 
 from clients.api.helpers.helpers import Checking
 from clients.headers_builder import Headers_catalog
-from clients.api.catalog.v3.buyer_client import Authorization_Catalog
+from clients.api.catalog.v3.client import Authorization_Catalog
 
 
-from clients.api.catalog.facade import CatalogFacade
+from clients.api.catalog.v3.facade import CatalogFacade
 import pytest
 import requests
 
@@ -19,11 +19,12 @@ from config import (
 from curlify import to_curl
 
 @pytest.fixture
-def catalog_headers_simple(generate_jwt_token_catalog):
+def catalog_headers_simple(generate_jwt_token_catalog,country):
     headers = (
         Headers_catalog()
         .with_x_api_key(generate_jwt_token_catalog)
         .with_cns_agent("Web CNS Fix-Price")
+        .with_x_country(country)
         .build()
     )
     return headers
@@ -51,16 +52,29 @@ def generate_jwt_token_catalog():
 
 
 @pytest.fixture
-def login_catalog(client_catalog_create):
+def catalog_facade(client_catalog_create):
     return CatalogFacade(client_catalog_create)
 
 
 
 
+
 @pytest.fixture
-def user_exist_in_catalog_ru(catalog_headers_simple,
-                             login_catalog,
+def user_exist_in_catalog(catalog_headers_simple,
+                             catalog_facade,
                              phone):
-    response_catalog = login_catalog.login_catalog_v3(phone=phone, headers=catalog_headers_simple)
+    response_catalog = catalog_facade.login_catalog_v3(phone=phone, headers=catalog_headers_simple)
     Checking.assert_status_code(response_catalog, 200)
+
+
+@pytest.fixture
+def user_not_exist_in_catalog(catalog_headers_simple,
+                             catalog_facade,
+                             phone):
+    response_catalog=catalog_facade.login_not_user_catalog_v3(phone=phone,headers=catalog_headers_simple)
+    Checking.assert_status_code(response_catalog, 400)
+    assert  response_catalog.json().get("message")=="Пользователь не найден",f"Телефон {phone} уже зарегистрирован"
+
+
+
 

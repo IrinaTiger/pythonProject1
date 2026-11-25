@@ -7,6 +7,7 @@ allure-pytest==2.16.0
 curlify==3.0.0
 typing==3.7.4.3
 dotenv==0.9.9
+faker==40.54.0
 
 
 
